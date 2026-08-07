@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recorrido con Rafa Loera | Ruta Punta Oriente</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    
+    <!-- Navigation Navbar -->
+    <nav class="top-nav glass-panel">
+        <div class="nav-brand">Ruta Punta Oriente 📍</div>
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="switchView('map-view', this)">Mapa Interactivo</button>
+            <button class="nav-tab" onclick="switchView('timeline-view', this)">Cronología</button>
+        </div>
+    </nav>
+
+    <div id="views-container">
+        <!-- Map View -->
+        <div id="map-view" class="view-section active">
+            <div id="app-container">
+                <!-- Sidebar -->
+                <aside class="sidebar glass-panel">
+                    <header>
+                        <h1>Recorrido con Rafa Loera</h1>
+                        <p>Ruta Punta Oriente</p>
+                    </header>
+
+                    <!-- GPS Tracking Section -->
+                    <div style="padding: 20px 24px; border-bottom: 1px solid var(--glass-border); background: rgba(59, 130, 246, 0.05);">
+                        <h3 style="font-size: 1rem; color: #1e293b; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                            <span style="font-size: 1.2rem;">📡</span> Transmitir Ubicación
+                        </h3>
+                        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px;">Ingresa tu nombre para que el resto del equipo te vea en el mapa.</p>
+                        <input type="text" id="gps-username" placeholder="Tu nombre (ej. Juan)" style="width: 100%; padding: 10px; margin-bottom: 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-family: 'Outfit', sans-serif; box-sizing: border-box; font-size: 0.95rem;">
+                        <button id="btn-gps" class="premium-btn" style="font-size: 1rem; padding: 12px;">
+                            📍 Activar Localización
+                        </button>
+                    </div>
+
+                    <div class="route-list-container">
+                        <h3>Punto de Reunión</h3>
+                        <ul id="route-list" class="route-list">
+                            <!-- Dynamic points will be added here -->
+                        </ul>
+                    </div>
+                </aside>
+
+                <!-- Map Container -->
+                <main class="map-wrapper">
+                    <div id="map"></div>
+            
+            <!-- Controls Overlay -->
+            <div class="map-controls glass-panel" id="map-controls">
+                <div class="mobile-controls-toggle" onclick="document.getElementById('controls-content').classList.toggle('collapsed')">
+                    <span>⚙️ Capas y Simbología</span>
+                    <span class="toggle-icon">▼</span>
+                </div>
+                <div id="controls-content" class="controls-content collapsed">
+                    <div class="control-section">
+                    <h4 class="control-title">Visualización</h4>
+                    <label class="premium-toggle">
+                        <span>Manzanas</span>
+                        <input type="checkbox" id="layer-manzanas" checked>
+                        <div class="toggle-slider"></div>
+                    </label>
+                    <label class="premium-toggle">
+                        <span>Distrito Local</span>
+                        <input type="checkbox" id="layer-distritos" checked>
+                        <div class="toggle-slider"></div>
+                    </label>
+                    <label class="premium-toggle">
+                        <span>Recorrido Ruta Punta Oriente</span>
+                        <input type="checkbox" id="layer-zigzag" checked>
+                        <div class="toggle-slider"></div>
+                    </label>
+                </div>
+                
+                <div class="control-section">
+                    <h4 class="control-title">Simbología</h4>
+                    <div class="legend-item">
+                        <div class="color-box" style="background-color: #3b82f6; box-shadow: 0 0 8px rgba(59,130,246,0.4);"></div>
+                        <span>Ruta Punta Oriente</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="color-box" style="background-color: #f59e0b; box-shadow: 0 0 8px rgba(245,158,11,0.4);"></div>
+                        <span>Distrito Local</span>
+                    </div>
+                </div>
+                </div>
+            </div>
+        </main>
+            </div>
+        </div>
+
+        <!-- Timeline View -->
+        <div id="timeline-view" class="view-section">
+            <div class="timeline-wrapper">
+                <div class="timeline-content">
+                    <div class="timeline-header">
+                        <h2>Cronología de Puntos de Reunión</h2>
+                        <p>Secuencia de visitas y colonias correspondientes a Ruta Punta Oriente.</p>
+                        
+
+                    </div>
+                    <div class="timeline-list" id="timeline-list-container">
+                        <!-- Dynamic timeline items will go here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    
+    <!-- Supabase JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- Custom JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.19.10/proj4.js"></script>
+    <script src="RutaOriente/DistritoLocal.js"></script>
+    <script src="RutaOriente/ManzanasRutaOriente.js"></script>
+    <script src="RutaOriente/Puntos_RutaOriente.js"></script>
+    <script src="RutaOriente/AdaptadorRutaOriente.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
